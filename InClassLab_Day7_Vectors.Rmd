@@ -1,6 +1,6 @@
 ---
 title: "In Class Lab"
-author: "Dr. Shoemaker"
+author: "Brenda Nava"
 date: "DATA 2401"
 output: html_document
 ---
@@ -19,6 +19,26 @@ knitr::opts_chunk$set(echo = TRUE)
 3. Add 1 to each element in `n` and print the result
 4. Create a vector `m` that contains the numbers 10 to 1 (in that order), in two different ways, neither of which is just typing "10, 9 , 8 ...".  Hint: use one of the helper functions we learned.
 5. Subtract `m` FROM `n`. Note the recycling!
+```{r}
+#1
+n <- 10:49
+
+#2
+length(n)
+
+#3
+n+1
+n
+
+#4
+m <- (10:1)
+m
+
+#5
+n-m
+
+```
+
 
 ### Set 2 
 
@@ -27,6 +47,12 @@ knitr::opts_chunk$set(echo = TRUE)
 3. Use the `plot()` function to plot your "wave"!
      + the x vector goes in the first argument, the y vector goes in the second argument
      + You'll need to add the argument `type = "l"` for a line. NOTE: That is a lower case "L", not a 1. 
+```{r}
+x_range <- seq(-5, 10, by = 0.1)
+sin_wave <- sin(x_range)
+plot(x_range, sin_wave, type = "l")
+```
+
 
 
 ### Set 3 
@@ -38,6 +64,17 @@ knitr::opts_chunk$set(echo = TRUE)
 5. Use indexing to access the 5th to the 8th numbers in your combined vector
 6. Use indexing to create a new vector that contains the first 3 elements and last 3 elements of your combined vector. 
 7. Bonus/extra: do the above in a way that would work no matter how long the vector is (as long as it's longer than 2 elements)
+```{r}
+first_nums <- 40:50
+next_nums <- seq(51, 60)
+combo_nums <- c(first_nums, next_nums)
+combo_nums
+
+combo_nums[c(7)]
+combo_nums[c(5:8)]
+
+combo_nums[c(1:3, 18:21)]
+```
 
 ## In-Class Activities
 
@@ -50,7 +87,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 x <- c(3.2, NA, 4.1, 5.0, NA, 2.8)
+is.na(x)
+x_no_na <- x[!is.na(x)]
+x_no_na
 
+mean_x <- mean(x_no_na)
+mean_x
+
+x[is.na(x)] <- mean_x
+
+x
 ```
 
 1. Logical indexing
@@ -65,6 +111,25 @@ x <- c(3.2, NA, 4.1, 5.0, NA, 2.8)
 
 ```{r}
 
+#`grades` vector from class:
+grades <- c(99,  77, 100,  91,  87,  72,  82,  94,  81)
+grades
+
+#logical vector is_a <- grades >= 90
+is_a <- grades >= 90
+
+#Print the values that are A’s
+grades[is_a]
+
+#print the indices/positions of the A’s using which(is_a)
+which(is_a)
+
+
+#Print: How many A’s are there?
+length(grades[is_a])
+sum(is_a)
+
+
 ```
 
 1.  Emperical probabilities
@@ -78,12 +143,39 @@ x <- c(3.2, NA, 4.1, 5.0, NA, 2.8)
 
 ```{r}
 
+set.seed(2401)
+
+#Simulate 200 die rolls (fair die) in a vector rolls (use sample(1:6, ...))
+rolls <- sample(1:6, size = 200, replace = TRUE)
+rolls
+
+#* Use table(rolls) to count how many of each face occurred.
+counts <- table(rolls)
+counts
+
+#Convert counts to proportions (estimated probabilities) by dividing by length(rolls)
+proportions(counts/ length(rolls))
+
+#ID most common face in the simulation
+commonFace <- as.numeric(names(which.max(counts)))
+print(paste("The most common face in the simulation was", commonFace))
+
+
+#it checks out. 2 was the most commonly rolled.
 ```
 
 
 1. Write a *function* to simulate rolling a 6-sided die and returns the result.
 
 ```{r}
+#1-6, generates 1 roll, sampling and putting it back in= to be drawn again 
+roll_die <- function() {
+  sample(1:6, size = 1, replace = TRUE)
+}
+roll_die()
+
+
+
 
 ```
 
@@ -92,7 +184,11 @@ x <- c(3.2, NA, 4.1, 5.0, NA, 2.8)
 1. Write a function to simulate rolling 2 6-sided dice that returns the sum of the rolls. 
 
 ```{r}
+rolling_two <- function() {
+  (sample(1:6, size = 2, replace = TRUE))
+}
 
+sum(rolling_two())
 
 ```
 
@@ -102,6 +198,25 @@ x <- c(3.2, NA, 4.1, 5.0, NA, 2.8)
 
 ```{r}
 # Your one-roll function goes here
+rolling_winner <- function(name1, name2) {
+  
+  roll_1 <- c(sample(1:6, size = 1, replace = TRUE))
+  
+  roll_2 <- c(sample(1:6, size = 1, replace = TRUE))
+  
+
+  if (roll_1 == roll_2) {
+    print("1st tie, reroll!" )
+  } else if (roll_1 > roll_2) {
+    print(name1)
+  } else if (roll_2 > roll_1) {
+    print(name2)
+  } else {
+    print("DRAW")
+  }
+  
+}
+rolling_winner("Brenda", "Joel")
 
 ```
 
@@ -120,8 +235,32 @@ Process:
      * number of ties (sum(ties))
 
 ```{r}
+roll_pro15 <- function(name1,name2){
+  P1v <- c(sample(1:6, 15, replace = TRUE))
+  P2v <- c(sample(1:6, 15, replace = TRUE))
+  
+  
+  p1_wins <- P1v > P2v
+  p2_wins <- P2v > P1v
+  ties_ <- P1v == P2v
+  
+  
+  win1 <- sum(p1_wins)
+  win2 <- sum(p2_wins)
+  tie_sum <- sum(ties_)
+  
+  
+  if(win1 > win2){
+    print(paste(name1,"wins",win1,"times"))
+  }
+  else if (win2 > win1){
+    print(paste(name2,"wins",win2,"times"))
+  }
+  else if (tie_sum)
+    print("DRAW")
+}
 
-
+roll_pro15("Brenda", "Joel")
 ```
 
 
@@ -129,5 +268,35 @@ Process:
 
 ```{r}
 # Your "cheating" function goes here
+roll_pro15 <- function(name1,name2){
+  high_probs <- c(.05, .10, .10, .25, .25, .25)
+  
+  P1v <- c(sample(1:6, 15, replace = TRUE, prob = high_probs))
+  P2v <- c(sample(1:6, 15, replace = TRUE))
+  
+  
+  p1_wins <- P1v > P2v
+  p2_wins <- P2v > P1v
+  ties_ <- P1v == P2v
+  
+  
+  win1 <- sum(p1_wins)
+  win2 <- sum(p2_wins)
+  tie_sum <- sum(ties_)
+  
+  
+  if(win1 > win2){
+    print(paste(name1,"wins",win1,"times"))
+  }
+  else if (win2 > win1){
+    print(paste(name2,"wins",win2,"times"))
+  }
+  else if (tie_sum)
+    print("DRAW")
+}
+
+roll_pro15("Brenda", "Joel")
+```
+
 ```
 
